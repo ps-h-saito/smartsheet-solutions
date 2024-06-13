@@ -1,7 +1,7 @@
 # Install the smartsheet sdk with the command: pip install smartsheet-python-sdk
 #############################################################################
 ###                                                                       ###
-###  Sheetdata write insert                                               ###
+###  sheetdata write insert                                               ###
 ###    parameters:seach_sheet_name, process_workspace_id, insert_sheet_id ###
 ###                                                                       ###
 ###  (sample)                                                             ###

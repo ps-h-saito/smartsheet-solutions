@@ -1,7 +1,7 @@
 # Install the smartsheet sdk with the command: pip install smartsheet-python-sdk
 #############################################################################
 ###                                                                       ###
-###  Sheetdata write insert                                               ###
+###  sheetdata write insert                                               ###
 ###    parameters:seach_sheet_name, process_workspace_id, insert_sheet_id ###
 ###                                                                       ###
 ###  (sample)                                                             ###
@@ -84,7 +84,7 @@ def evaluate_row_and_build_insert_data(source_row):
 def sheetdata_write_insert_timer(myTimer: func.TimerRequest) -> None:
     
     logging.info('Python HTTP trigger function processed a request.')
-    logging.info(f"▼処理を開始します（sheetdata_write_insert）")
+    logging.info(f"▼処理を開始します（sheetdata_write_insert_timer）")
     print("Start!!")
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"

@@ -45,7 +45,7 @@ def evaluate_update_option_data(target_sheet, target_column_name):
 @app.route(route="dropdownlist_update", auth_level=func.AuthLevel.ANONYMOUS)
 def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    logging.info(f"▼処理を開始します（sheetdata_write_insert）")
+    logging.info(f"▼処理を開始します（dropdownlist_update）")
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
     try:

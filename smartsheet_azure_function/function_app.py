@@ -1,7 +1,7 @@
 # Install the smartsheet sdk with the command: pip install smartsheet-python-sdk
 #############################################################################
 ###                                                                       ###
-###  sheet_azure_function                                                 ###
+###  smartsheet_azure_function                                            ###
 ###                                                                       ###
 #############################################################################
 import azure.functions as func
@@ -106,7 +106,7 @@ def evaluate_update_option_data(target_sheet, target_column_name):
 
 #############################################################################
 ###                                                                       ###
-###  Sheetdata write insert                                               ###
+###  sheetdata write insert                                               ###
 ###    parameters:seach_sheet_name, seach_workspace_id, insert_sheet_id   ###
 ###                                                                       ###
 #############################################################################
@@ -201,16 +201,16 @@ def sheetdata_write_insert(req: func.HttpRequest) -> func.HttpResponse:
 
 #############################################################################
 ###                                                                       ###
-###  Sheetdata write insert rimer                                         ###
+###  sheetdata write insert timer                                         ###
 ###    parameters:seach_sheet_name, seach_workspace_id, insert_sheet_id   ###
 ###                                                                       ###
 #############################################################################
-@app.timer_trigger(schedule="0 0 6 * * *", arg_name="myTimer", run_on_startup=True,
+@app.timer_trigger(schedule="0 0 6 * * *", arg_name="myTimer", run_on_startup=False,
               use_monitor=False) 
 def sheetdata_write_insert_timer(myTimer: func.TimerRequest) -> None:
     
     logging.info('Python HTTP trigger function processed a request.')
-    logging.info(f"▼処理を開始します（sheetdata_write_insert）")
+    logging.info(f"▼処理を開始します（sheetdata_write_insert_timer）")
     print("Start!!")
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
@@ -309,7 +309,7 @@ def sheetdata_write_insert_timer(myTimer: func.TimerRequest) -> None:
 @app.route(route="dropdownlist_update", auth_level=func.AuthLevel.ANONYMOUS)
 def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    logging.info(f"▼処理を開始します（sheetdata_write_insert）")
+    logging.info(f"▼処理を開始します（dropdownlist_update）")
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
     try:

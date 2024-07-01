@@ -18,6 +18,7 @@ newColumn_map = {}
 insColumn_map = {}
 mstColumn_map = {}
 updColumn_map = {}
+funcColumn_map = {}
 
 # Setting Start --------------------------------
 
@@ -116,6 +117,18 @@ def sheetdata_write_insert(req: func.HttpRequest) -> func.HttpResponse:
     logging.info(f"▼処理を開始します（sheetdata_write_insert）")
     print("Start!!")
 
+    # challenge check
+    logging.info('challenge check')
+    request_json = req.get_json()
+    logging.info(f'get_req:{request_json}')
+
+    if request_json and "challenge" in request_json:
+        logging.info('challenge response')
+        return json.dumps({
+            "smartsheetHookResponse": request_json['challenge']
+        })
+    logging.info('not challenge response')
+    
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
     try:
         access_token = os.environ['SMARTSHEET_ACCESS_TOKEN_AZURE']
@@ -310,6 +323,19 @@ def sheetdata_write_insert_timer(myTimer: func.TimerRequest) -> None:
 def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     logging.info(f"▼処理を開始します（dropdownlist_update）")
+    print("Start!!")
+
+    # challenge check
+    logging.info('challenge check')
+    request_json = req.get_json()
+    logging.info(f'get_req:{request_json}')
+
+    if request_json and "challenge" in request_json:
+        logging.info('challenge response')
+        return json.dumps({
+            "smartsheetHookResponse": request_json['challenge']
+        })
+    logging.info('not challenge response')
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
     try:
@@ -381,12 +407,13 @@ def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
 ###    parameters:master_sheet_id, update_sheet_id, master_column_name, update_column_name ###
 ###                                                                       ###
 #############################################################################
-@app.timer_trigger(schedule="0 */60 * * * *", arg_name="myTimer", run_on_startup=False,
+@app.timer_trigger(schedule="0 */600 * * * *", arg_name="myTimer", run_on_startup=False,
               use_monitor=False) 
 def dropdownlist_update_timer(myTimer: func.TimerRequest) -> None:
-    
+
     logging.info('Python Timer trigger function processed a request.')
     logging.info(f"▼処理を開始します（dropdownlist_update_timer）")
+    print("Start!!")
 
     # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
     try:
@@ -456,3 +483,149 @@ def dropdownlist_update_timer(myTimer: func.TimerRequest) -> None:
 
     logging.info("■ドロップダウンリストの更新が完了しました")
 
+#############################################################################
+###                                                                       ###
+###  webhook create                                                       ###
+###    parameters:name, callback_url, sheet_id                            ###
+###                                                                       ###
+#############################################################################
+@app.route(route="webhook_create", auth_level=func.AuthLevel.ANONYMOUS)
+def webhook_create(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    logging.info(f"▼処理を開始します（webhook_create）")
+    print("Start!!")
+
+    # Initialize client. Uses the API token in the environment variable "SMARTSHEET_ACCESS_TOKEN"
+    try:
+        access_token = os.environ['SMARTSHEET_ACCESS_TOKEN_AZURE']
+    except:
+        access_token = os.environ['SMARTSHEET_ACCESS_TOKEN']
+    smart = smartsheet.Smartsheet(access_token)
+    # Make sure we don't miss any error
+    smart.errors_as_exceptions(True)
+
+    # parameter
+    name = req.params.get('name')
+    callback_url_function = req.params.get('callback_url_function')
+    function_list_sheet_id = req.params.get('function_list_sheet_id')
+    sheet_id = int(req.params.get('sheet_id'))
+    
+
+    # callback_url
+    callback_url = None
+    funcSheet = smart.Sheets.get_sheet(function_list_sheet_id)
+    for column in funcSheet.columns:
+        funcColumn_map[column.title] = column.id
+        #logging.info(f"cheack 2-1-2:{funcColumn_map[column.title]},{column.id}")
+
+    # シート一覧を取得できている場合    
+    if funcSheet:
+        # シートの行数分ループ
+        for row in funcSheet.rows:
+            # functionの項目と引数の対象function名称が一致している項目を抽出
+            function_name = ""
+            for cell in row.cells:
+                if cell.column_id == funcColumn_map['Function']:
+                    function_name = cell.value
+                    break
+
+            if function_name == callback_url_function:
+                # 一致した行のURL項目のURLを取得
+                for cell in row.cells:
+                    if cell.column_id == funcColumn_map['URL']:
+                        callback_url = cell.value
+                        break
+
+    # master Sheet
+    mstSheet = smart.Sheets.get_sheet(sheet_id)
+
+    # Build column map for later reference - translates column names to column id
+    for column in mstSheet.columns:
+        mstColumn_map[column.title] = column.id
+        
+    column_id1 = None
+    column_id2 = None
+    column_id3 = None
+
+    if req.params.get('column_name1'):
+        column_id1 = mstColumn_map[req.params.get('column_name1')]
+    if req.params.get('column_name2'):
+        column_id2 = mstColumn_map[req.params.get('column_name2')]
+    if req.params.get('column_name3'):
+        column_id3 = mstColumn_map[req.params.get('column_name3')]
+
+    try:
+        if column_id1 and not column_id2 and not column_id3:
+            webhook = smart.Webhooks.create_webhook(
+                smartsheet.models.Webhook({
+                    'name': name,
+                    'callbackUrl': callback_url,
+                    'scope': 'sheet',
+                    'scopeObjectId': sheet_id,
+                    'events': ['*.*'],
+                    'version': 1,
+                    'subscope': {
+                        'columnIds': [column_id1],
+                    }
+                })
+            )
+        elif column_id1 and column_id2 and not column_id3:
+            webhook = smart.Webhooks.create_webhook(
+                smartsheet.models.Webhook({
+                    'name': name,
+                    'callbackUrl': callback_url,
+                    'scope': 'sheet',
+                    'scopeObjectId': sheet_id,
+                    'events': ['*.*'],
+                    'version': 1,
+                    'subscope': {
+                        'columnIds': [column_id1, column_id2],
+                    }
+                })
+            )
+        elif column_id1 and column_id2 and column_id3:
+            webhook = smart.Webhooks.create_webhook(
+                smartsheet.models.Webhook({
+                    'name': name,
+                    'callbackUrl': callback_url,
+                    'scope': 'sheet',
+                    'scopeObjectId': sheet_id,
+                    'events': ['*.*'],
+                    'version': 1,
+                    'subscope': {
+                        'columnIds': [column_id1, column_id2, column_id3],
+                    }
+                })
+            )
+        else:
+            webhook = smart.Webhooks.create_webhook(
+                smartsheet.models.Webhook({
+                    'name': name,
+                    'callbackUrl': callback_url,
+                    'scope': 'sheet',
+                    'scopeObjectId': sheet_id,
+                    'events': ['*.*'],
+                    'version': 1,
+                })
+            )
+
+        if webhook.message == "SUCCESS":
+            Webhook_upd = smart.Webhooks.update_webhook(
+                webhook.data.id,       # webhook_id
+                smart.models.Webhook({
+                'enabled': True}))
+        
+        logging.info("web_hook list get")
+        # web_hook list get
+        IndexResult = smart.Webhooks.list_webhooks(
+            page_size=100,
+            page=1,
+            include_all=False
+        )
+
+    except Exception as e:
+        logging.error(f"Error creating webhook: {e}")
+        return func.HttpResponse("■Webhookの作成が異常終了しました")
+
+    logging.info(f"▲処理を終了します（webhook_create）")
+    return func.HttpResponse("■Webhookの作成が完了しました")

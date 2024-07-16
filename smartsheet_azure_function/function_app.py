@@ -10,6 +10,7 @@ import json
 import logging
 import smartsheet
 import os
+import time
 
 app = func.FunctionApp()
 
@@ -119,9 +120,12 @@ def sheetdata_write_insert(req: func.HttpRequest) -> func.HttpResponse:
 
     # challenge check
     logging.info('challenge check')
-    request_json = req.get_json()
-    logging.info(f'get_req:{request_json}')
-
+    request_json=None
+    try:
+        request_json = req.get_json()
+        logging.info(f'get_req:{request_json}')
+    except ValueError:
+        pass
     if request_json and "challenge" in request_json:
         logging.info('challenge response')
         return json.dumps({
@@ -327,9 +331,12 @@ def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
 
     # challenge check
     logging.info('challenge check')
-    request_json = req.get_json()
-    logging.info(f'get_req:{request_json}')
-
+    request_json=None
+    try:
+        request_json = req.get_json()
+        logging.info(f'get_req:{request_json}')
+    except ValueError:
+        pass
     if request_json and "challenge" in request_json:
         logging.info('challenge response')
         return json.dumps({
@@ -376,7 +383,7 @@ def dropdownlist_update(req: func.HttpRequest) -> func.HttpResponse:
     for column in updSheet.columns:
         updColumn_map[column.title] = column.id
 
-    logging.info("Column Info update_sheet_id:" + str(update_sheet_id) + " update_column_id:" + str(updColumn_map[update_column_name]))
+    logging.info(f"Column Info update_column_id:{updColumn_map[update_column_name]}")
 
     # Specify column properties get
     column = smart.Sheets.get_column(
@@ -534,6 +541,7 @@ def webhook_create(req: func.HttpRequest) -> func.HttpResponse:
                 for cell in row.cells:
                     if cell.column_id == funcColumn_map['URL']:
                         callback_url = cell.value
+                        logging.info(f"▼callback_url:{callback_url}")
                         break
 
     # master Sheet
@@ -555,6 +563,15 @@ def webhook_create(req: func.HttpRequest) -> func.HttpResponse:
         column_id3 = mstColumn_map[req.params.get('column_name3')]
 
     try:
+        logging.info("web_hook list get")
+        # web_hook list get
+        IndexResult = smart.Webhooks.list_webhooks(include_all=False)
+        # target web_hook Delete
+        for wh in IndexResult.data:
+            if wh.name == name:
+                smart.Webhooks.delete_webhook(wh.id)
+                break
+
         if column_id1 and not column_id2 and not column_id3:
             webhook = smart.Webhooks.create_webhook(
                 smartsheet.models.Webhook({

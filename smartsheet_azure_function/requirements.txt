@@ -4,3 +4,5 @@
 
 azure-functions
 smartsheet-python-sdk
+azure-storage-blob
+pandas

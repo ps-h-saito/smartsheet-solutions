@@ -10,7 +10,7 @@ import json
 import logging
 import smartsheet
 import os
-import time
+import main_func as tr
 
 app = func.FunctionApp()
 
@@ -646,3 +646,62 @@ def webhook_create(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.info(f"▲処理を終了します（webhook_create）")
     return func.HttpResponse("■Webhookの作成が完了しました")
+
+
+#############################################################################
+###                                                                       ###
+###  svf_cloud_rest                                                       ###
+###    parameters:sheet_id                                                ###
+###                                                                       ###
+#############################################################################
+# HttpRequest メイン処理 svf_cloud_rest
+@app.route(route="svf_cloud_rest", auth_level=func.AuthLevel.ANONYMOUS)
+def svf_cloud_rest(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    #####################################
+    #  challenge check
+    #  Webhookのチャレンジチェック
+    #####################################
+    logging.info('challenge check')
+    request_json=None
+    try:
+        request_json = req.get_json()
+        logging.info(f'get_req:{request_json}')
+    except ValueError:
+        pass
+    if request_json and "challenge" in request_json:
+        logging.info('challenge response')
+        return json.dumps({
+            "smartsheetHookResponse": request_json['challenge']
+        })
+    logging.info('not challenge response')
+    #####################################
+
+    # 引数パラメータチェック後にメイン処理起動
+    try:
+        # パラメータチェック
+        sheet_id = req.params.get('sheet_id')
+        row_id = request_json.get('rowId')
+        if sheet_id is not None:
+            rowIdList = list()
+            logging.info(f"sheet_id:{sheet_id} row_id:{row_id} request_json:{request_json}")
+            logging.info(f"events:{request_json.get('events')}")
+            for event in request_json.get('events'):
+                logging.info(f"event:{event} event.rowId:{event['rowId']}")
+                rowIdList.append(event['rowId'])
+            # メイン処理起動
+            res = tr.svf_cloud_rest_main(sheet_id,rowIdList)
+            if res == False:
+                # 処理エラー
+                return func.HttpResponse("■svf_cloud_restの作成が異常終了しました")
+        else:
+            # パラメータエラー
+            logging.info(f"▲パラメータが指定されていなか間違っています。処理を終了します。")
+    except Exception as e:
+        logging.error(f"Error creating svf_cloud_rest: {e}")
+        return func.HttpResponse("■svf_cloud_restの作成が異常終了しました")
+
+    logging.info(f"▲処理を終了します（svf_cloud_rest）")
+    return func.HttpResponse("■svf_cloud_restkの作成が完了しました")
+

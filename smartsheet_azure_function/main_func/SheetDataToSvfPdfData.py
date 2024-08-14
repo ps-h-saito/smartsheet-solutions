@@ -33,3 +33,17 @@ column_list = [
 
 newColumn_map = {}
 insColumn_map = {}
+
+###
+#  カラムマップ作製
+#  @param row
+#  @param column_name
+#  @return カラム情報
+###
+def get_cell_by_new_column_name(row, column_name):
+    column_id = newColumn_map[column_name]
+    return row.get_column(column_id)
+def get_cell_by_ins_column_name(row, column_name):
+    column_id = insColumn_map[column_name]
+    return row.get_column(column_id)
+

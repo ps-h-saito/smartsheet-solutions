@@ -11,7 +11,11 @@ PDF_FILE_NAME = "{}_{}_{}.pdf" # 添付用PDFの名称
 JUDGE_COLUMN_NAME = "状況" # 処理起動判断を行うカラム名称（パラメータのシートIDのシートに存在するカラムの名称を指定）
 LOOP_START_COLUMN_NAME = "商品名" # １レコード内のループ開始名称
 LOOP_END_COLUMN_NAME = "単価" # １レコード内のループ終了名称
-AZURE_CONNECT_STR = ".net" # Azureストレージコネクト定義
+AZURE_CONNECT_STR1 = "DefaultEndpointsProtocol=https;"
+AZURE_CONNECT_STR2 = ""
+AZURE_CONNECT_STR3 = ""
+AZURE_CONNECT_STR4 = ""
+AZURE_CONNECT_STR = AZURE_CONNECT_STR1 + AZURE_CONNECT_STR2 + AZURE_CONNECT_STR3 + AZURE_CONNECT_STR4 # Azureストレージコネクト定義
 SITUATION_JUGMENT_NAME = "1.新規作成(PDF添付待ち)" # 実行判断条件
 INPUT_FILE_NAME = "inputFile.csv" # Azureストレージ格納用CSVファイル名
 OUTPUT_FILE_NAME = "outputFile.pdf" # Azureストレージ格納用PDFファイル名

@@ -15,3 +15,21 @@ AZURE_CONNECT_STR = ".net" # Azureストレージコネクト定義
 SITUATION_JUGMENT_NAME = "1.新規作成(PDF添付待ち)" # 実行判断条件
 INPUT_FILE_NAME = "inputFile.csv" # Azureストレージ格納用CSVファイル名
 OUTPUT_FILE_NAME = "outputFile.pdf" # Azureストレージ格納用PDFファイル名
+
+# 出力CSV用固定情報マッピング定義
+fixed_field_list = [["顧客社名","ClientName"],["伝票ID","OrderID"],["受発注年月日","OrderDate"]]
+# 出力CSV用可変情報マッピング定義
+column_list = [
+    ["商品名1","ItemName"],["数量1","Num"],["単価1","UnitPrice"],
+    ["商品名2","ItemName"],["数量2","Num"],["単価2","UnitPrice"],
+    ["商品名3","ItemName"],["数量3","Num"],["単価3","UnitPrice"],
+    ["商品名4","ItemName"],["数量4","Num"],["単価4","UnitPrice"],
+    ["商品名5","ItemName"],["数量5","Num"],["単価5","UnitPrice"],
+    ["商品名6","ItemName"],["数量6","Num"],["単価6","UnitPrice"],
+    ["商品名7","ItemName"],["数量7","Num"],["単価7","UnitPrice"],
+    ["商品名8","ItemName"],["数量8","Num"],["単価8","UnitPrice"],
+    ["商品名9","ItemName"],["数量9","Num"],["単価9","UnitPrice"],
+    ["商品名10","ItemName"],["数量10","Num"],["単価10","UnitPrice"]]
+
+newColumn_map = {}
+insColumn_map = {}

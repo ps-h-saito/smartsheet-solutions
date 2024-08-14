@@ -11,6 +11,7 @@ PDF_FILE_NAME = "{}_{}_{}.pdf" # 添付用PDFの名称
 JUDGE_COLUMN_NAME = "状況" # 処理起動判断を行うカラム名称（パラメータのシートIDのシートに存在するカラムの名称を指定）
 LOOP_START_COLUMN_NAME = "商品名" # １レコード内のループ開始名称
 LOOP_END_COLUMN_NAME = "単価" # １レコード内のループ終了名称
+# Hithubでの登録時にエラーとなるため、分割して格納。環境変数に入れることで問題無くなるかは検証が必要。
 AZURE_CONNECT_STR1 = "DefaultEndpointsProtocol=https;"
 AZURE_CONNECT_STR2 = "AccountName=rgsmartsheetcustoma8a62;"
 AZURE_CONNECT_STR3 = "AccountKey=T9SNqDKGwo4er1///"
@@ -212,6 +213,14 @@ def svf_cloud_rest_main(sheet_id,rowIdList):
             updated_row = smart.Sheets.update_rows(
                 sheet_id,
                 [new_row])
+            
+            # 処理が完了した場合、一時ファイルを削除
+            # 入力ファイルが存在している場合削除
+            if blob_client_in.exists():
+                blob_client_in.delete_blob()
+            # 出力ファイルが存在している場合削除
+            if blob_client_out.exists():
+                blob_client_out.delete_blob()
 
 ###
 #  参照元シートの行データから挿入用のデータを作成

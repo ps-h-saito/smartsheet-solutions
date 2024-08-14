@@ -11,4 +11,4 @@ PDF_FILE_NAME = "{}_{}_{}.pdf" # 添付用PDFの名称
 JUDGE_COLUMN_NAME = "状況" # 処理起動判断を行うカラム名称（パラメータのシートIDのシートに存在するカラムの名称を指定）
 LOOP_START_COLUMN_NAME = "商品名" # １レコード内のループ開始名称
 LOOP_END_COLUMN_NAME = "単価" # １レコード内のループ終了名称
-AZURE_CONNECT_STR = "" # Azureストレージコネクト定義
+AZURE_CONNECT_STR = "net" # Azureストレージコネクト定義

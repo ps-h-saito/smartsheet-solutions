@@ -207,3 +207,61 @@ def svf_cloud_rest_main(sheet_id,rowIdList):
             updated_row = smart.Sheets.update_rows(
                 sheet_id,
                 [new_row])
+
+###
+#  参照元シートの行データから挿入用のデータを作成
+#  @param source_row
+#  @return 挿入用行データ
+###
+def create_temp_insert_data(source_row):
+    rows = []
+    # 参照元シートの対象カラム
+    for item in column_list:
+        # 商品名の項目の場合
+        if item[0][0:len(LOOP_START_COLUMN_NAME)] == LOOP_START_COLUMN_NAME:
+            row = smartsheet.models.Row()
+            row.to_last = True
+            cell = get_cell_by_ins_column_name(source_row, item[0])
+            # 参照元の商品名が存在しない場合は以降データ無しとして終了
+            if cell.value is None or cell.value == "":
+                break
+            # 固定フィールド情報
+            # 顧客社名
+            cell = get_cell_by_ins_column_name(source_row, fixed_field_list[0][0])
+            row.cells.append({
+                'column_id': newColumn_map[fixed_field_list[0][1]],
+                'value': cell.value or "",
+                'strict': False
+            })
+            # 案件ID
+            cell = get_cell_by_ins_column_name(source_row, fixed_field_list[1][0])
+            row.cells.append({
+                'column_id': newColumn_map[fixed_field_list[1][1]],
+                'value': cell.value or "",
+                'strict': False
+            })
+            # 受発注年月日
+            cell = get_cell_by_ins_column_name(source_row, fixed_field_list[2][0])
+            tstr = cell.value
+            if cell.value != "":
+                tdate = dt.strptime(cell.value, '%Y-%m-%dT%H:%M:%S')
+                tstr = tdate.strftime('%Y/%m/%d').replace('/0', '/')
+            row.cells.append({
+                'column_id': newColumn_map[fixed_field_list[2][1]],
+                'value': tstr or "",
+                'strict': False
+            })
+        
+        # 参照元の情報をtempシート用に追加
+        cell = get_cell_by_ins_column_name(source_row, item[0])
+        row.cells.append({
+            'column_id': newColumn_map[item[1]],
+            'value': cell.value or "",
+            'strict': False
+        })
+        # 終了項目の場合に作成した行を追加
+        if item[0][0:len(LOOP_END_COLUMN_NAME)] == LOOP_END_COLUMN_NAME:
+            rows.append(row)
+
+    return rows
+

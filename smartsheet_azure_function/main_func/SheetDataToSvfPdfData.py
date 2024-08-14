@@ -13,9 +13,10 @@ LOOP_START_COLUMN_NAME = "商品名" # １レコード内のループ開始名�
 LOOP_END_COLUMN_NAME = "単価" # １レコード内のループ終了名称
 AZURE_CONNECT_STR1 = "DefaultEndpointsProtocol=https;"
 AZURE_CONNECT_STR2 = "AccountName=rgsmartsheetcustoma8a62;"
-AZURE_CONNECT_STR3 = ""
-AZURE_CONNECT_STR4 = "EndpointSuffix=core.windows.net"
-AZURE_CONNECT_STR = AZURE_CONNECT_STR1 + AZURE_CONNECT_STR2 + AZURE_CONNECT_STR3 + AZURE_CONNECT_STR4 # Azureストレージコネクト定義
+AZURE_CONNECT_STR3 = "AccountKey=T9SNqDKGwo4er1///"
+AZURE_CONNECT_STR4 = "F04PqhQKOYtaN7UlFjEcSl4T9ownjb45GNMjXBww23BKERedK7nMBz5sIQG+AStVKwL6A==;"
+AZURE_CONNECT_STR5 = "EndpointSuffix=core.windows.net"
+AZURE_CONNECT_STR = AZURE_CONNECT_STR1 + AZURE_CONNECT_STR2 + AZURE_CONNECT_STR3 + AZURE_CONNECT_STR4 + AZURE_CONNECT_STR5 # Azureストレージコネクト定義
 SITUATION_JUGMENT_NAME = "1.新規作成(PDF添付待ち)" # 実行判断条件
 INPUT_FILE_NAME = "inputFile.csv" # Azureストレージ格納用CSVファイル名
 OUTPUT_FILE_NAME = "outputFile.pdf" # Azureストレージ格納用PDFファイル名

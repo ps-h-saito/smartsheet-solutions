@@ -12,7 +12,7 @@ JUDGE_COLUMN_NAME = "状況" # 処理起動判断を行うカラム名称（パ�
 LOOP_START_COLUMN_NAME = "商品名" # １レコード内のループ開始名称
 LOOP_END_COLUMN_NAME = "単価" # １レコード内のループ終了名称
 AZURE_CONNECT_STR1 = "DefaultEndpointsProtocol=https;"
-AZURE_CONNECT_STR2 = ""
+AZURE_CONNECT_STR2 = "AccountName=rgsmartsheetcustoma8a62;"
 AZURE_CONNECT_STR3 = ""
 AZURE_CONNECT_STR4 = ""
 AZURE_CONNECT_STR = AZURE_CONNECT_STR1 + AZURE_CONNECT_STR2 + AZURE_CONNECT_STR3 + AZURE_CONNECT_STR4 # Azureストレージコネクト定義
